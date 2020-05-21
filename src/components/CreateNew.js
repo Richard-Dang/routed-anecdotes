@@ -1,22 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 import { useHistory } from "react-router-dom";
+import { useField } from "../hooks";
 
 const CreateNew = ({ addNew, notify }) => {
-  const [content, setContent] = useState("");
-  const [author, setAuthor] = useState("");
-  const [info, setInfo] = useState("");
-
+  const { reset: contentReset, ...content } = useField("text");
+  const { reset: authorReset, ...author } = useField("text");
+  const { reset: infoReset, ...info } = useField("text");
   const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     addNew({
-      content,
-      author,
-      info,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0,
     });
-    notify(`Added new anecdote: ${content}`, 5000);
+    notify(`Added new anecdote: ${content.value}`, 5000);
     history.push("/");
   };
 
@@ -26,29 +26,27 @@ const CreateNew = ({ addNew, notify }) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input
-            name="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
+          <input {...content} />
         </div>
         <div>
           author
-          <input
-            name="author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input
-            name="info"
-            value={info}
-            onChange={(e) => setInfo(e.target.value)}
-          />
+          <input {...info} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <button
+          type="button"
+          onClick={() => {
+            contentReset();
+            authorReset();
+            infoReset();
+          }}
+        >
+          reset
+        </button>
       </form>
     </div>
   );
